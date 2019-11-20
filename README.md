@@ -9,7 +9,7 @@ To execute it in your machine, please just replace the list variables bellow in 
 - projectId --- Id of your project in google cloud
 - keyFilename --- json file with information about your project in google cloud
 - gcsUri --- Path of your video file
-- extension_name --- Name of txt file that you'd like to create
+- nome_arquivo --- Name of txt file that you'd like to create
 - destFilename --- Local of you'd like to create txt file
 
 # Language
