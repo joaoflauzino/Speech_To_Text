@@ -5,17 +5,21 @@ const speech = require('@google-cloud/speech');
 const {Storage} = require('@google-cloud/storage');
 
 const gcs = new Storage({
-  projectId: ID_PROJECT,
-  keyFilename: PATH_JSON,
+  projectId: projectId,
+  keyFilename: keyFilename,
 });
 const client = new speech.SpeechClient({
-   projectId: ID_PROJECT,
-   keyFilename: PATH_JSON,
+   projectId: projectId,
+   keyFilename: keyFilename,
    _use_grpc: false,
 });
 
+var nome = nome_arquivo
 /*---------------------------------- Configurações para transcriçã do audio --------------------------------------------------------*/
 
+const recognitionMetadata = {
+    microphoneDistance: 'NEARFIELD',
+};
 const languageCode = 'pt-BR';
 const audioChannelCount = 1;
 const enableSeparateRecognitionPerChannel = false;
@@ -28,31 +32,44 @@ const industryNaicsCodeOfAudio = 561422;
 var sampleRate=0;
 var Channels=0;
 
+/*--------------------------------------Funcao escreve Transcricao----------------------------------------------------*/
+
+function write_file(conteudo, nome) {
+	var nome_extensao = nome + '.txt';
+	var stream = gcs.bucket(destFilename).file(nome_extensao).createWriteStream();
+	stream.on('error', function(error){
+		console.log(error);
+	});
+	console.log("Escrevendo o arquivo...");
+	stream.write(conteudo);
+	stream.end();
+};
+
 
 /*----------------------------------Funcao que define configuracoes para transcrição --------------------------------------------------------*/
 
 const audio = {
-				uri: uri,
-				};
+	uri: gcsUri,
+};
 				
-            const config = {
-                    encoding: encoding,
-                    sampleRateHertz:sampleRate,
-                    languageCode: languageCode,
-                    audioChannelCount: 1,
-                    enableSeparateRecognitionPerChannel: enableSeparateRecognitionPerChannel,
-                    maxAlternatives: maxAlternatives,
-                    useEnhanced: useEnhanced,
-                    metadata: metadata,
-                    industryNaicsCodeOfAudio: industryNaicsCodeOfAudio,
-                    recordingDeviceType: recordingDeviceType,
-                    interactioType: interactioType,
-            };
-			
-			const request = {
-				config: config,
-				audio: audio,
-				};
+const config = {
+	encoding: encoding,
+	sampleRateHertz:sampleRate,
+	languageCode: languageCode,
+	audioChannelCount: 1,
+	enableSeparateRecognitionPerChannel: enableSeparateRecognitionPerChannel,
+	maxAlternatives: maxAlternatives,
+	useEnhanced: useEnhanced,
+	metadata: metadata,
+	industryNaicsCodeOfAudio: industryNaicsCodeOfAudio,
+	recordingDeviceType: recordingDeviceType,
+	interactioType: interactioType,
+};
+
+const request = {
+	config: config,
+	audio: audio,
+};
         
 /*-------------------------------------Funcao Transcricao de audio para texto-----------------------------------------------------*/
 
@@ -66,11 +83,11 @@ function speech_to_text(request, nome) {
                 return operation.promise();
                 })
                 .then((data) => {
-                const results = _.get(data[0], 'resultados', []);
-                    var transcription = results.map(result => result.alternatives[0].transcript).join('\n');
-                    console.log(`Transcrição: ${transcription}`);
-                    var conteudo = transcription
-                    write_file(conteudo, nome);
+		const results = _.get(data[0], 'resultados', []);
+                var transcription = results.map(result => result.alternatives[0].transcript).join('\n');
+                console.log(`Transcrição: ${transcription}`);
+                var conteudo = transcription
+                write_file(conteudo);
                     
                 })
             .catch(err => {
