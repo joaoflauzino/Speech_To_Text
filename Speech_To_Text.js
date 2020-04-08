@@ -1,5 +1,5 @@
 
-/*---------------------------------- Bibliotecas --------------------------------------------------------*/
+/*---------------------------------- Librarys --------------------------------------------------------*/
 
 const speech = require('@google-cloud/speech');
 const {Storage} = require('@google-cloud/storage');
@@ -15,7 +15,7 @@ const client = new speech.SpeechClient({
 });
 
 var nome = nome_arquivo
-/*---------------------------------- Configurações para transcriçã do audio --------------------------------------------------------*/
+/*---------------------------------- Audio Transcription Config --------------------------------------------------------*/
 
 const recognitionMetadata = {
     microphoneDistance: 'NEARFIELD',
@@ -32,7 +32,7 @@ const industryNaicsCodeOfAudio = 561422;
 var sampleRate=0;
 var Channels=0;
 
-/*--------------------------------------Funcao escreve Transcricao----------------------------------------------------*/
+/*-------------------------------------- Transcription ----------------------------------------------------*/
 
 function write_file(conteudo, nome) {
 	var nome_extensao = nome + '.txt';
@@ -46,7 +46,7 @@ function write_file(conteudo, nome) {
 };
 
 
-/*----------------------------------Funcao que define configuracoes para transcrição --------------------------------------------------------*/
+/*---------------------------------- Config Transcription --------------------------------------------------------*/
 
 const audio = {
 	uri: gcsUri,
@@ -71,7 +71,7 @@ const request = {
 	audio: audio,
 };
         
-/*-------------------------------------Funcao Transcricao de audio para texto-----------------------------------------------------*/
+/*------------------------------------- Audio Transcription -----------------------------------------------------*/
 
 function speech_to_text(request, nome) {
 
